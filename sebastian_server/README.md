@@ -1,98 +1,89 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Sebastian Server
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Sebastian AI Assistant의 **백엔드 API**입니다. [NestJS](https://nestjs.com/) 11 기반이며, SQLite(TypeORM)와 JWT 인증, Swagger 문서를 사용합니다.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 요구 사항
 
-## Description
+- **Node.js** 22.x 권장 (`package.json`의 `@types/node`와 맞춤)
+- **npm** 10.x (Node 22에 포함)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+터미널에서 `npm`을 찾을 수 없다면 [nvm](https://github.com/nvm-sh/nvm) 등으로 Node를 설치한 뒤, 새 터미널을 열거나 `source ~/.zshrc`로 셸 설정을 다시 불러오세요.
 
-## Project setup
+## 설치
+
+저장소 루트가 아니라 **이 디렉터리(`sebastian_server`)**에서 실행합니다.
 
 ```bash
-$ npm install
+cd sebastian_server
+npm ci
 ```
 
-## Compile and run the project
+`package-lock.json`이 없거나 잠금 파일을 쓰지 않을 때만 `npm install`을 사용하면 됩니다.
+
+## 실행
 
 ```bash
-# development
-$ npm run start
+# 개발 (파일 변경 시 자동 재시작)
+npm run start:dev
 
-# watch mode
-$ npm run start:dev
+# 일반 시작
+npm run start
 
-# production mode
-$ npm run start:prod
+# 프로덕션 (먼저 빌드 필요)
+npm run build
+npm run start:prod
 ```
 
-## Run tests
+기본적으로 **HTTP 포트 3000**에서 수신합니다. (`src/main.ts`)
+
+## API 문서 (Swagger)
+
+서버 실행 후 브라우저에서 다음 주소를 엽니다.
+
+- **Swagger UI:** [http://localhost:3000/api](http://localhost:3000/api)
+
+문서 제목·설명은 `src/main.ts`의 `DocumentBuilder` 설정을 따릅니다.
+
+## 주요 엔드포인트
+
+| 메서드 | 경로 | 설명 |
+|--------|------|------|
+| `POST` | `/users/signup` | 회원가입 |
+| `GET` | `/users` | 사용자 목록 |
+| `GET` | `/users/me` | 로그인 사용자 정보 (Bearer JWT 필요) |
+| `POST` | `/auth/login` | 로그인 (JWT 발급) |
+
+컨트롤러: `src/user/users.controller.ts`, `src/auth/auth.controller.ts`
+
+## 데이터베이스
+
+- **엔진:** SQLite
+- **파일:** 프로젝트 루트( `sebastian_server` 기준)의 `db.sqlite`
+- **설정:** `src/app.module.ts` — `synchronize: true`로 개발 시 스키마가 DB에 맞춰 동기화됩니다. 운영 환경에서는 마이그레이션 전략을 따로 두는 것이 안전합니다.
+
+## 빌드
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run build
 ```
 
-## Deployment
+산출물은 `dist/`에 생성됩니다.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 테스트·품질
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run test          # 단위 테스트
+npm run test:watch    # 감시 모드
+npm run test:cov      # 커버리지
+npm run test:e2e      # E2E (jest-e2e 설정)
+npm run lint          # ESLint
+npm run format        # Prettier
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 보안 참고
 
-## Resources
+JWT 시크릿과 만료 시간은 `src/auth/auth.module.ts`, `src/auth/strategies/jwt.strategy/jwt.strategy.ts`에 코드로 고정되어 있습니다. **실서비스 전에는 환경 변수 등으로 분리**하는 것을 권장합니다.
 
-Check out a few resources that may come in handy when working with NestJS:
+## 라이선스
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+`package.json` 기준 **UNLICENSED** (비공개).
