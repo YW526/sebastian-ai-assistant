@@ -8,10 +8,12 @@ async function bootstrap() {
 
   //Swagger 설정
   const config = new DocumentBuilder()
-    .setTitle('My API')
-    .setDescription('회원가입 / 로그인 API')
+    .setTitle('나의 세바스찬 API')
+    .setDescription('나의 세바스찬 API 문서')
     .setVersion('1.0')
     .addBearerAuth()
+    .addTag('Auth')
+    .addTag('Users')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

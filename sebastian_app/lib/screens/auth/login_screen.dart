@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:sebastian_app/widgets/common/custom_button.dart';
+import 'package:sebastian_app/routes/app_routes.dart';
 import 'package:sebastian_app/services/auth_service.dart';
+import 'package:sebastian_app/storage/token_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,8 +15,49 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  
-  final authService = AuthService();
+  final _authService = AuthService();
+
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _login() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      Get.snackbar('알림', '이메일과 비밀번호를 입력해 주세요.');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final token = await _authService.login(email, password);
+      if (!mounted) return;
+
+      if (token != null) {
+        await TokenStorage.saveToken(token);
+        // 홈 라우트를 app_routes에 추가하고 이후 선언
+        // Get.offAllNamed(AppRoutes.home);
+        Get.snackbar('로그인', '성공');
+      } else {
+        Get.snackbar('로그인 실패', '이메일 또는 비밀번호를 확인해 주세요.');
+      }
+    } catch (_) {
+      if (!mounted) return;
+      Get.snackbar('오류', '네트워크를 확인해 주세요.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  //final authService = AuthService();
   
   @override
   Widget build(BuildContext context) {
@@ -100,6 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           TextField(
                             controller: passwordController,
+                            obscureText: true,
                             decoration: const InputDecoration(
                               isDense: true,
                               contentPadding: EdgeInsets.symmetric(vertical: 2),
@@ -128,24 +174,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: SizedBox(
                               width: 170,
                               height: 35,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: Colors.black,
-                                  elevation: 3,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    side: const BorderSide(color: Color(0xFFE1E1E1)),
-                                  ),
-                                ),
-                                child: const Text(
-                                  "로그인",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                              child: CustomButton(
+                                label: "로그인",
+                                onPressed: _login,
+                                isLoading: _isLoading,
                               ),
                             ),
                           ),
@@ -155,18 +187,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 15),
 
               // 회원가입
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text("계정이 없으신가요? "),
-                  Text(
-                    "회원가입하기",
+                children: [
+                  const Text(
+                    "계정이 없으신가요? ",
                     style: TextStyle(
                       color: Colors.grey,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => Get.offAllNamed('/signup'),
+                    child: const Text(
+                      "회원가입하기",
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ],

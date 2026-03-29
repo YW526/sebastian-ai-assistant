@@ -30,7 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-    
+  #상태관리
+  get: ^4.6.6
   http: ^0.13.5
   shared_preferences: ^2.2.2
 
