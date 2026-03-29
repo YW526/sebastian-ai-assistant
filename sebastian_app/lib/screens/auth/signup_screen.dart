@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:sebastian_app/routes/app_routes.dart';
 import 'package:sebastian_app/services/auth_service.dart';
+import 'package:sebastian_app/widgets/common/custom_button.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -11,8 +14,16 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  
+  final passwordConfirmController = TextEditingController();
+  final nicknameController = TextEditingController();
+
   final authService = AuthService();
+
+  DateTime _birthDate = DateTime(2000, 10, 22);
+  /// 서버 DTO: '남' | '여'
+  String _gender = '여';
+
+  bool _isLoading = false;
 
   Widget _buildDropdown(String text) {
     return Expanded(
@@ -33,7 +44,104 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
-  
+
+  Future<void> _pickBirthDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _birthDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() => _birthDate = picked);
+    }
+  }
+
+  Widget _genderChoice(String apiValue, String label) {
+    final selected = _gender == apiValue;
+    return InkWell(
+      onTap: () => setState(() => _gender = apiValue),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            selected ? Icons.check_box : Icons.check_box_outline_blank,
+            size: 20,
+            color: selected ? const Color(0xFF333333) : Colors.grey,
+          ),
+          const SizedBox(width: 6),
+          Text(label, style: const TextStyle(fontSize: 14)),
+        ],
+      ),
+    );
+  }
+
+  String _formatBirthDate() {
+    final y = _birthDate.year.toString().padLeft(4, '0');
+    final m = _birthDate.month.toString().padLeft(2, '0');
+    final d = _birthDate.day.toString().padLeft(2, '0');
+    return '$y-$m-$d';
+  }
+
+  Future<void> _signup() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+    final confirm = passwordConfirmController.text;
+    final nickname = nicknameController.text.trim();
+
+    if (email.isEmpty || password.isEmpty || confirm.isEmpty || nickname.isEmpty) {
+      Get.snackbar('알림', '필수 항목을 모두 입력해 주세요.');
+      return;
+    }
+    if (password.length < 6) {
+      Get.snackbar('알림', '비밀번호는 6자 이상이어야 합니다.');
+      return;
+    }
+    if (password != confirm) {
+      Get.snackbar('알림', '비밀번호가 일치하지 않습니다.');
+      return;
+    }
+    if (nickname.length < 2) {
+      Get.snackbar('알림', '이름(닉네임)은 2자 이상 입력해 주세요.');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final errorMessage = await authService.signup(
+        email: email,
+        password: password,
+        nickname: nickname,
+        birthDate: _formatBirthDate(),
+        gender: _gender,
+      );
+      if (!mounted) return;
+
+      if (errorMessage == null) {
+        Get.snackbar('회원가입', '가입이 완료되었습니다.');
+        Get.offAllNamed(AppRoutes.login);
+      } else {
+        Get.snackbar('회원가입 실패', errorMessage);
+      }
+    } catch (_) {
+      if (mounted) {
+        Get.snackbar('오류', '네트워크를 확인해 주세요.');
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    passwordConfirmController.dispose();
+    nicknameController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,7 +185,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       child: Row(
                         children: [
                           Image.asset(
-                            "assets/images/icon.png", 
+                            "assets/images/icon.png",
                             width: 40,
                             fit: BoxFit.contain,
                           ),
@@ -87,7 +195,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
                     Padding(
                       padding: const EdgeInsets.all(20),
-                
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -101,6 +208,8 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                           TextField(
                             controller: emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            autocorrect: false,
                             decoration: const InputDecoration(
                               isDense: true,
                               contentPadding: EdgeInsets.symmetric(vertical: 2),
@@ -122,11 +231,12 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                           TextField(
                             controller: passwordController,
+                            obscureText: true,
                             decoration: const InputDecoration(
                               isDense: true,
                               contentPadding: EdgeInsets.symmetric(vertical: 2),
                               border: UnderlineInputBorder(),
-                              hintText: '1234',
+                              hintText: '6자 이상',
                               hintStyle: TextStyle(color: Color(0xFFD9D9D9), fontSize: 14),
                             ),
                           ),
@@ -141,12 +251,13 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                           ),
                           TextField(
-                            controller: passwordController,
+                            controller: passwordConfirmController,
+                            obscureText: true,
                             decoration: const InputDecoration(
                               isDense: true,
                               contentPadding: EdgeInsets.symmetric(vertical: 2),
                               border: UnderlineInputBorder(),
-                              hintText: '1234',
+                              hintText: '6자 이상',
                               hintStyle: TextStyle(color: Color(0xFFD9D9D9), fontSize: 14),
                             ),
                           ),
@@ -161,7 +272,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                           ),
                           TextField(
-                            controller: passwordController,
+                            controller: nicknameController,
                             decoration: const InputDecoration(
                               isDense: true,
                               contentPadding: EdgeInsets.symmetric(vertical: 2),
@@ -181,14 +292,17 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              _buildDropdown("2000년"),
-                              const SizedBox(width: 8),
-                              _buildDropdown("10월"),
-                              const SizedBox(width: 8),
-                              _buildDropdown("22일"),
-                            ],
+                          GestureDetector(
+                            onTap: _pickBirthDate,
+                            child: Row(
+                              children: [
+                                _buildDropdown('${_birthDate.year}년'),
+                                const SizedBox(width: 8),
+                                _buildDropdown('${_birthDate.month}월'),
+                                const SizedBox(width: 8),
+                                _buildDropdown('${_birthDate.day}일'),
+                              ],
+                            ),
                           ),
 
                           const SizedBox(height: 20),
@@ -204,50 +318,17 @@ class _SignupScreenState extends State<SignupScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Row(
-                                children: const [
-                                  Icon(Icons.check_box_outline_blank, size: 20),
-                                  SizedBox(width: 6),
-                                  Text("남자", style: TextStyle(fontSize: 14)),
-                                ],
-                              ),
-                              Row(
-                                children: const [
-                                  Icon(Icons.check_box, size: 20, color: Color(0xFF333333)),
-                                  SizedBox(width: 6),
-                                  Text("여자", style: TextStyle(fontSize: 14)),
-                                ],
-                              ),
+                              _genderChoice('남', '남자'),
+                              _genderChoice('여', '여자'),
                             ],
                           ),
 
                           const SizedBox(height: 25),
 
-                          // 로그인 버튼
-                          Center(
-                            child: SizedBox(
-                              width: 170,
-                              height: 35,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: Colors.black,
-                                  elevation: 3,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    side: const BorderSide(color: Color(0xFFE1E1E1)),
-                                  ),
-                                ),
-                                child: const Text(
-                                  "회원가입",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
+                          CustomButton(
+                            label: '회원가입',
+                            onPressed: _signup,
+                            isLoading: _isLoading,
                           ),
                         ],
                       ),
@@ -261,12 +342,20 @@ class _SignupScreenState extends State<SignupScreen> {
               // 회원가입
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text("계정이 있으신가요? "),
-                  Text(
-                    "로그인하기",
-                    style: TextStyle(
-                      color: Colors.grey,
+                children: [
+                  const Text("계정이 있으신가요? "),
+                  TextButton(
+                    onPressed: () => Get.offAllNamed(AppRoutes.login),
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: const Text(
+                      "로그인하기",
+                      style: TextStyle(
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                 ],

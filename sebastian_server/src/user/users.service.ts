@@ -40,7 +40,7 @@ export class UsersService {
   }
 
   //사용자 찾기
-  async findAll(id: number): Promise<User[]> {
+  async findAll(): Promise<User[]> {
     return await this.userRepository.find();
   }
 
@@ -66,7 +66,10 @@ export class UsersService {
 
   //사용자 삭제
   async remove(email: string): Promise<void> {
-    const user = await this.findOne(id);
+    const user = await this.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('사용자를 찾을 수 없습니다');
+    }
     await this.userRepository.remove(user);
   }
 }

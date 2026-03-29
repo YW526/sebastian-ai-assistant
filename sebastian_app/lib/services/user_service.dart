@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../utils/token_storage.dart';
+import '../storage/token_storage.dart';
 
 class UserService {
-  final String baseUrl = 'http://10.0.2.2:3000';
+  final String baseUrl = 'http://localhost:3000';
 
   Future<Map<String, dynamic>?> getProfile() async {
     final token = await TokenStorage.getToken();

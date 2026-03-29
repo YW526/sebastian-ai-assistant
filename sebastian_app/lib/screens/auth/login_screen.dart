@@ -43,8 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (token != null) {
         await TokenStorage.saveToken(token);
-        // 홈 라우트를 app_routes에 추가하고 이후 선언
-        // Get.offAllNamed(AppRoutes.home);
+        Get.offAllNamed('/home');
         Get.snackbar('로그인', '성공');
       } else {
         Get.snackbar('로그인 실패', '이메일 또는 비밀번호를 확인해 주세요.');

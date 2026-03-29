@@ -14,7 +14,7 @@ export class UsersController {
     @Post('signup')
     @ApiOperation({ summary: '회원가입' })
     async signup(@Body() dto: CreateUserDto) {
-        return this.usersService.create(dto.email, dto.password);
+        return this.usersService.create(dto);
     }
 
     @Get()
