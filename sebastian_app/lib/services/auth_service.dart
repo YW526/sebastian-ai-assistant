@@ -53,4 +53,28 @@ class AuthService {
     } catch (_) {}
     return '회원가입에 실패했습니다 (${response.statusCode})';
   }
+  
+  Future<String?> updatePassword(String email, String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/password-update'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'password': password,
+      }),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return null;
+    }
+
+    try {
+    final data = jsonDecode(response.body);
+    if (data['message'] != null) {
+      return data['message'];
+    }
+  } catch (_) {}
+
+  return '비밀번호 변경 실패 (${response.statusCode})';
+  }
 }

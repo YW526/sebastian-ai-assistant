@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:sebastian_app/routes/app_routes.dart';
 import 'package:sebastian_app/services/auth_service.dart';
 import 'package:sebastian_app/widgets/common/custom_button.dart';
+import 'package:sebastian_app/widgets/common/custom_field.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -14,12 +15,17 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final passwordConfirmController = TextEditingController();
-  final nicknameController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  final nameController = TextEditingController();
 
+  int getDaysInMonth(int year, int month) {
+    return DateTime(year, month + 1, 0).day;
+  }
+  
+  
   final authService = AuthService();
 
-  DateTime _birthDate = DateTime(2000, 10, 22);
+  DateTime _birthDate = DateTime.now();
   /// 서버 DTO: '남' | '여'
   String _gender = '여';
 
@@ -28,11 +34,12 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget _buildDropdown(String text) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        height: 25,
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(6),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -51,6 +58,30 @@ class _SignupScreenState extends State<SignupScreen> {
       initialDate: _birthDate,
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Localizations.override(
+          context: context,
+          locale: const Locale('ko', 'KR'),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              dialogTheme: const DialogThemeData(
+                backgroundColor: Colors.white,
+              ),
+              colorScheme: const ColorScheme.light(
+                primary: Colors.black,
+                onPrimary: Colors.white,
+                onSurface: Colors.black,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.black,
+                ),
+              ),
+            ),
+            child: child!,
+          ),
+        );
+      },
     );
     if (picked != null) {
       setState(() => _birthDate = picked);
@@ -86,8 +117,8 @@ class _SignupScreenState extends State<SignupScreen> {
   Future<void> _signup() async {
     final email = emailController.text.trim();
     final password = passwordController.text;
-    final confirm = passwordConfirmController.text;
-    final nickname = nicknameController.text.trim();
+    final confirm = confirmPasswordController.text;
+    final nickname = nameController.text.trim();
 
     if (email.isEmpty || password.isEmpty || confirm.isEmpty || nickname.isEmpty) {
       Get.snackbar('알림', '필수 항목을 모두 입력해 주세요.');
@@ -137,8 +168,8 @@ class _SignupScreenState extends State<SignupScreen> {
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-    passwordConfirmController.dispose();
-    nicknameController.dispose();
+    confirmPasswordController.dispose();
+    nameController.dispose();
     super.dispose();
   }
 
@@ -206,17 +237,11 @@ class _SignupScreenState extends State<SignupScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          TextField(
+                          CustomTextField(
                             controller: emailController,
+                            hintText: 'example@email.com',
                             keyboardType: TextInputType.emailAddress,
                             autocorrect: false,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 2),
-                              border: UnderlineInputBorder(),
-                              hintText: 'example@email.com',
-                              hintStyle: TextStyle(color: Color(0xFFD9D9D9), fontSize: 14),
-                            ),
                           ),
 
                           const SizedBox(height: 20),
@@ -229,19 +254,13 @@ class _SignupScreenState extends State<SignupScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          TextField(
+                          CustomTextField(
                             controller: passwordController,
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 2),
-                              border: UnderlineInputBorder(),
-                              hintText: '6자 이상',
-                              hintStyle: TextStyle(color: Color(0xFFD9D9D9), fontSize: 14),
-                            ),
+                            hintText: '6자 이상',
+                            isPassword: true,
                           ),
 
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 20),
 
                           const Text(
                             "비밀번호 확인",
@@ -250,16 +269,10 @@ class _SignupScreenState extends State<SignupScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          TextField(
-                            controller: passwordConfirmController,
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 2),
-                              border: UnderlineInputBorder(),
-                              hintText: '6자 이상',
-                              hintStyle: TextStyle(color: Color(0xFFD9D9D9), fontSize: 14),
-                            ),
+                          CustomTextField(
+                            controller: confirmPasswordController,
+                            hintText: '비밀번호를 다시 입력하세요',
+                            isPassword: true,
                           ),
 
                           const SizedBox(height: 20),
@@ -271,15 +284,9 @@ class _SignupScreenState extends State<SignupScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          TextField(
-                            controller: nicknameController,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 2),
-                              border: UnderlineInputBorder(),
-                              hintText: '엄마 저 힘낼게요',
-                              hintStyle: TextStyle(color: Color(0xFFD9D9D9), fontSize: 14),
-                            ),
+                          CustomTextField(
+                            controller: nameController,
+                            hintText: '엄마 저 힘낼게요',
                           ),
 
                           const SizedBox(height: 20),
@@ -297,9 +304,9 @@ class _SignupScreenState extends State<SignupScreen> {
                             child: Row(
                               children: [
                                 _buildDropdown('${_birthDate.year}년'),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 5),
                                 _buildDropdown('${_birthDate.month}월'),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 5),
                                 _buildDropdown('${_birthDate.day}일'),
                               ],
                             ),

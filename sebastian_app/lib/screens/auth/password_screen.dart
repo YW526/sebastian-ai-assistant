@@ -6,16 +6,17 @@ import 'package:sebastian_app/services/auth_service.dart';
 import 'package:sebastian_app/storage/token_storage.dart';
 import 'package:sebastian_app/widgets/common/custom_field.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class PasswordScreen extends StatefulWidget {
+  const PasswordScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<PasswordScreen> createState() => _PasswordScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _PasswordScreenState extends State<PasswordScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
   final _authService = AuthService();
 
   bool _isLoading = false;
@@ -24,30 +25,39 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _login() async {
+  Future<void> _changePassword() async {
     final email = emailController.text.trim();
     final password = passwordController.text;
+    final confirmPassword = confirmPasswordController.text;
 
-    if (email.isEmpty || password.isEmpty) {
-      Get.snackbar('알림', '이메일과 비밀번호를 입력해 주세요.');
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      Get.snackbar('알림', '모든 필드를 입력해 주세요.');
+      return;
+    }
+    if (password.length < 6) {
+      Get.snackbar('알림', '비밀번호는 6자 이상이어야 합니다.');
+      return;
+    }
+    if (password != confirmPassword) {
+      Get.snackbar('알림', '비밀번호가 일치하지 않습니다.');
       return;
     }
 
     setState(() => _isLoading = true);
 
     try {
-      final token = await _authService.login(email, password);
+      final error = await _authService.updatePassword(email, password);
       if (!mounted) return;
 
-      if (token != null) {
-        await TokenStorage.saveToken(token);
-        Get.offAllNamed('/home');
-        Get.snackbar('로그인', '성공');
+      if (error == null) {
+        Get.offAllNamed('/login');
+        Get.snackbar('비밀번호 변경', '성공');
       } else {
-        Get.snackbar('로그인 실패', '이메일 또는 비밀번호를 확인해 주세요.');
+        Get.snackbar('비밀번호 변경 실패', error);
       }
     } catch (_) {
       if (!mounted) return;
@@ -56,8 +66,6 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) setState(() => _isLoading = false);
     }
   }
-
-  //final authService = AuthService();
   
   @override
   Widget build(BuildContext context) {
@@ -147,33 +155,32 @@ class _LoginScreenState extends State<LoginScreen> {
                             isPassword: true,
                           ),
 
-                          const SizedBox(height: 1),
+                          const SizedBox(height: 20),
 
-                          // 비밀번호 찾기
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () => Get.offAllNamed('/password'),
-                              child: Text(
-                                "비밀번호를 잊으셨나요?",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
+                          // 비밀번호 확인
+                          const Text(
+                            "비밀번호 확인",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
+                          CustomTextField(
+                            controller: confirmPasswordController,
+                            hintText: '비밀번호를 다시 입력하세요',
+                            isPassword: true,
+                          ),
 
-                          const SizedBox(height: 1),
+                          const SizedBox(height: 20),
 
-                          // 로그인 버튼
+                          // 비밀번호 변경 버튼
                           Center(
                             child: SizedBox(
                               width: 170,
                               height: 35,
                               child: CustomButton(
-                                label: "로그인",
-                                onPressed: _login,
+                                label: "비밀번호 변경",
+                                onPressed: _changePassword,
                                 isLoading: _isLoading,
                               ),
                             ),
@@ -190,14 +197,17 @@ class _LoginScreenState extends State<LoginScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("계정이 없으신가요? ",),
+                  TextButton(
+                    onPressed: () => Get.offAllNamed('/login'),
+                    child: const Text(
+                      "로그인하기",
+                      style: TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
                   TextButton(
                     onPressed: () => Get.offAllNamed('/signup'),
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
                     child: const Text(
                       "회원가입하기",
                       style: TextStyle(
