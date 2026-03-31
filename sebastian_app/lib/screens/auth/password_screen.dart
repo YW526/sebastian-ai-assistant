@@ -51,7 +51,6 @@ class _PasswordScreenState extends State<PasswordScreen> {
 
     try {
       final error = await _authService.updatePassword(email, password);
-      if (!mounted) return;
 
       if (error == null) {
         Get.offAllNamed('/login');

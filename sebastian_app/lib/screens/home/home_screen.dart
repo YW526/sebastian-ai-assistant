@@ -7,7 +7,15 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('Home'),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, '/login'),
+              child: Icon(Icons.arrow_back_ios, color: Colors.black),
+            )
+          ],
+        ),
       ),
     );
   }

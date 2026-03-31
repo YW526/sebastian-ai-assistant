@@ -56,7 +56,7 @@ class AuthService {
   
   Future<String?> updatePassword(String email, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/auth/password-update'),
+      Uri.parse('$baseUrl/auth/updatePassword'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': email,
@@ -70,10 +70,17 @@ class AuthService {
 
     try {
     final data = jsonDecode(response.body);
-    if (data['message'] != null) {
-      return data['message'];
+
+    final message = data['message'];
+
+    if (message is List) {
+      return message.join('\n');
+    } else if (message is String) {
+      return message;
     }
-  } catch (_) {}
+  } catch (e) {
+    print(e);
+  }
 
   return '비밀번호 변경 실패 (${response.statusCode})';
   }
