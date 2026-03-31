@@ -30,7 +30,7 @@ class AuthService {
     required String gender,
   }) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/auth/signup'),
+      Uri.parse('$baseUrl/users/signup'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': email,
@@ -56,8 +56,10 @@ class AuthService {
   
   Future<String?> updatePassword(String email, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/auth/updatePassword'),
-      headers: {'Content-Type': 'application/json'},
+      Uri.parse('$baseUrl/users/password'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({
         'email': email,
         'password': password,

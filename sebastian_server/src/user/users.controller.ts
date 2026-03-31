@@ -18,17 +18,7 @@ export class UsersController {
         return this.usersService.create(dto);
     }
 
-    @Get()
-    async findAll() {
-        return this.usersService.findAll();
-    }
-    @Get('me')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    getProfile(@Req() req) {
-        return req.user;
-    }
-    @Patch('password')
+    @Post('password')
     @ApiOperation({ summary: '비밀번호 변경' })
     async updatePassword(@Body() dto: UpdatePasswordDto) {
         return this.usersService.updatePassword(dto.email, dto.password);

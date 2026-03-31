@@ -5,7 +5,8 @@ export class UpdatePasswordDto {
   @ApiProperty({ example: 'test@test.com' })
   @IsEmail()
   @IsNotEmpty()
-  email: string; 
+  email: string;
+
   @ApiProperty({ example: 'newPassword123' })
   @IsString()
   @MinLength(6)

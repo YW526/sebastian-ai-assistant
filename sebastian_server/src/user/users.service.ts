@@ -59,7 +59,7 @@ export class UsersService {
       throw new NotFoundException('사용자를 찾을 수 없습니다');
     }
 
-    var hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     Object.assign(existingUser, { password: hashedPassword });
     await this.userRepository.save(existingUser);
   }

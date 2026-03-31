@@ -18,9 +18,4 @@ export class AuthController {
     return this.authService.login(dto.email, dto.password);
   }
 
-  @Post('signup')
-  @ApiOperation({ summary: '회원가입' })
-  async signup(@Body() dto: CreateUserDto) {
-      return this.usersService.create(dto);
-  }
 }

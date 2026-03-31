@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:sebastian_app/widgets/common/custom_button.dart';
 import 'package:sebastian_app/routes/app_routes.dart';
 import 'package:sebastian_app/services/auth_service.dart';
-import 'package:sebastian_app/storage/token_storage.dart';
 import 'package:sebastian_app/widgets/common/custom_field.dart';
 
 class PasswordScreen extends StatefulWidget {
@@ -43,7 +42,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
       return;
     }
     if (password != confirmPassword) {
-      Get.snackbar('알림', '비밀번호가 일치하지 않습니다.');
+      Get.snackbar('알림', '비밀번호와 비밀번호 확인이 일치하지 않습니다.');
       return;
     }
 
@@ -156,7 +155,6 @@ class _PasswordScreenState extends State<PasswordScreen> {
 
                           const SizedBox(height: 20),
 
-                          // 비밀번호 확인
                           const Text(
                             "비밀번호 확인",
                             style: TextStyle(
@@ -166,7 +164,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
                           ),
                           CustomTextField(
                             controller: confirmPasswordController,
-                            hintText: '비밀번호를 다시 입력하세요',
+                            hintText: '비밀번호를 다시 입력해 주세요',
                             isPassword: true,
                           ),
 
