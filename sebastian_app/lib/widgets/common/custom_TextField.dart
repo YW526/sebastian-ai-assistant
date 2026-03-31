@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+enum TextFieldType {
+  underline,
+  box,
+}
+
 class CustomTextField extends StatefulWidget {
   const CustomTextField({
     super.key,
@@ -8,6 +13,7 @@ class CustomTextField extends StatefulWidget {
     this.isPassword = false,
     this.keyboardType,
     this.autocorrect = true,
+    this.type = TextFieldType.underline,
   });
 
   final TextEditingController controller;
@@ -15,6 +21,7 @@ class CustomTextField extends StatefulWidget {
   final bool isPassword;
   final TextInputType? keyboardType;
   final bool autocorrect;
+  final TextFieldType type;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -26,7 +33,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 28,
+      height: widget.type == TextFieldType.box ? 45 : 28,
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: const TextSelectionThemeData(
@@ -43,15 +50,35 @@ class _CustomTextFieldState extends State<CustomTextField> {
           style: const TextStyle(fontSize: 14),
           decoration: InputDecoration(
             isDense: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 2),
+            contentPadding: widget.type == TextFieldType.box
+                ? const EdgeInsets.symmetric(vertical: 10, horizontal: 10)
+                : const EdgeInsets.symmetric(vertical: 2),
 
-            border: const UnderlineInputBorder(),
-            enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFE1E1E1)),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.black, width: 1.5),
-            ),
+            // border
+            border: widget.type == TextFieldType.box
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFFD9D9D9)),
+                  )
+                : const UnderlineInputBorder(),
+
+            enabledBorder: widget.type == TextFieldType.box
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFFD9D9D9)),
+                  )
+                : const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFFE1E1E1)),
+                  ),
+
+            focusedBorder: widget.type == TextFieldType.box
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Colors.black, width: 1.5),
+                  )
+                : const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black, width: 1.5),
+                  ),
 
             hintText: widget.hintText,
             hintStyle: const TextStyle(
@@ -59,7 +86,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
               fontSize: 14,
             ),
 
-            // 비밀번호일 때만 아이콘
             suffixIcon: widget.isPassword
                 ? IconButton(
                     icon: Icon(
