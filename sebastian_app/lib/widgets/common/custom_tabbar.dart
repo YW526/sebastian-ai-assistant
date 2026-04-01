@@ -9,65 +9,56 @@ class CustomTabBar extends StatefulWidget {
 }
 
 class _CustomTabBarState extends State<CustomTabBar> {
+  int selectedIndex = 0;
+
+  final tabs = [
+    {"icon": Icons.home, "label": "홈", "route": "/home"},
+    {"icon": Icons.calendar_today, "label": "일정", "route": "/calendar"},
+    {"icon": Icons.check_box, "label": "루틴", "route": "/routine"},
+    {"icon": Icons.person, "label": "설정", "route": "/setting"},
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 80,
-      width: 400,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Container(
-            width: 100,
-            height: 80,
-            child: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-                child: const Text(
-                  " 홈 ",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 12,
+        children: List.generate(tabs.length, (index) {
+          final isSelected = selectedIndex == index;
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedIndex = index;
+              });
+              Get.toNamed(tabs[index]["route"] as String);
+            },
+            
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.black : Colors.transparent,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(
+                    tabs[index]["icon"] as IconData,
+                    color: isSelected ? Colors.white : Colors.black,
                   ),
                 ),
-              ),
+                const SizedBox(height: 6),
+                Text(
+                  tabs[index]["label"] as String,
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ],
             ),
-          ),
-          TextButton(
-            onPressed: () => Get.toNamed('/calendar'),
-            child: const Text(
-              "일정",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 12,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Get.toNamed('/calendar'),
-            child: const Text(
-              "루틴",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 12,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Get.toNamed('/calendar'),
-            child: const Text(
-              "설정",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        ],
+          );
+        }),
       ),
     );
   }

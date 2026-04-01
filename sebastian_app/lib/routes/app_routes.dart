@@ -8,6 +8,8 @@ import '../screens/auth/password_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/home/notifications_screen.dart';
 import '../screens/home/calendar_screen.dart';
+import '../screens/home/routine_screen.dart';
+import '../screens/home/setting_screen.dart';
 
 class AppRoutes {
   static const splash = '/splash';
@@ -17,6 +19,8 @@ class AppRoutes {
   static const password = '/password';
   static const notifications = '/notifications';
   static const calendar = '/calendar';
+  static const routine = '/routine';
+  static const setting = '/setting';
 
   static final List<GetPage> pages = [
     GetPage(
@@ -55,6 +59,16 @@ class AppRoutes {
     GetPage(
         name: calendar, 
         page: () => const CalendarScreen(),
+        transition: Transition.fadeIn,
+    ),
+    GetPage(
+        name: routine, 
+        page: () => const RoutineScreen(),
+        transition: Transition.fadeIn,
+    ),
+    GetPage(
+        name: setting, 
+        page: () => const SettingScreen(),
         transition: Transition.fadeIn,
     ),
   ];
