@@ -21,20 +21,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: CustomTextField(
-              controller: titleController,
-              type: TextFieldType.box,
-              hintText: '제목',
-            ),
-          ),
-          Expanded(
-            child: CustomTextField(
-              controller: titleController,
-              type: TextFieldType.box,
-              hintText: '제목',
-            ),
-          ),
+          
         ],
       ),
     );

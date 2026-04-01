@@ -28,6 +28,17 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             CustomTopBar(),
             CustomTabBar(),
+            TextButton(
+              onPressed: () => Get.toNamed('/calendar'),
+              child: const Text(
+                "+",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ],
         ),
       ),

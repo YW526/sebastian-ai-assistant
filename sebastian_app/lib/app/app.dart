@@ -12,7 +12,8 @@ class MySebastianApp extends StatelessWidget {
     return GetMaterialApp(
         title: '나의 세바스찬',
         theme: AppTheme.lightTheme,
-        initialRoute: AppRoutes.splash,
+        // initialRoute: AppRoutes.splash,
+        initialRoute: AppRoutes.home,
         localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

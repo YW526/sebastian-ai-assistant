@@ -34,6 +34,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: widget.type == TextFieldType.box ? 45 : 28,
+      width: widget.type == TextFieldType.box ? double.infinity : 100,
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: const TextSelectionThemeData(

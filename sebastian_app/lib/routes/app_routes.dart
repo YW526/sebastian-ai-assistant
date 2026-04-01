@@ -7,6 +7,7 @@ import '../screens/auth/signup_screen.dart';
 import '../screens/auth/password_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/home/notifications_screen.dart';
+import '../screens/home/calendar_screen.dart';
 
 class AppRoutes {
   static const splash = '/splash';
@@ -15,6 +16,7 @@ class AppRoutes {
   static const home = '/home';
   static const password = '/password';
   static const notifications = '/notifications';
+  static const calendar = '/calendar';
 
   static final List<GetPage> pages = [
     GetPage(
@@ -48,6 +50,11 @@ class AppRoutes {
     GetPage(
         name: notifications, 
         page: () => const NotificationsScreen(),
+        transition: Transition.fadeIn,
+    ),
+    GetPage(
+        name: calendar, 
+        page: () => const CalendarScreen(),
         transition: Transition.fadeIn,
     ),
   ];
