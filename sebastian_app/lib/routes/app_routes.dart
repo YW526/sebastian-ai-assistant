@@ -11,6 +11,7 @@ import '../screens/home/schedule_screen.dart';
 import '../screens/home/calendar_screen.dart';
 import '../screens/home/routine_screen.dart';
 import '../screens/home/setting_screen.dart';
+import '../screens/home/ai_cost_screen.dart';
 
 class AppRoutes {
   static const splash = '/splash';
@@ -23,6 +24,7 @@ class AppRoutes {
   static const calendar = '/calendar';
   static const routine = '/routine';
   static const setting = '/setting';
+  static const aiCost = '/ai-cost';
 
   static final List<GetPage> pages = [
     GetPage(
@@ -77,6 +79,11 @@ class AppRoutes {
         name: setting, 
         page: () => const SettingScreen(),
         transition: Transition.fadeIn,
+    ),
+    GetPage(
+        name: aiCost,
+        page: () => const AiCostScreen(),
+        transition: Transition.rightToLeft,
     ),
   ];
 }
