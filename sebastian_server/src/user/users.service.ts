@@ -2,17 +2,21 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
+import { Persona } from '../chat/persona.entity';
 import bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-
+/** 가입 시 기본 활성 페르소나 (`persona.type`) */
+const DEFAULT_PERSONA_TYPE = 'basic';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Persona)
+    private personaRepository: Repository<Persona>,
   ) {}
 
   //회원가입
@@ -31,6 +35,15 @@ export class UsersService {
     });
 
     const savedUser = await this.userRepository.save(user);
+
+    const basicPersona = await this.personaRepository.findOne({
+      where: { type: DEFAULT_PERSONA_TYPE },
+    });
+    if (basicPersona) {
+      savedUser.activePersona = basicPersona;
+      await this.userRepository.save(savedUser);
+    }
+
     return savedUser;
   }
 

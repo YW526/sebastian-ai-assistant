@@ -1,15 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:sebastian_app/config/api_config.dart';
 import '../storage/token_storage.dart';
 
 class UserService {
-  final String baseUrl = 'http://localhost:3000';
-
   Future<Map<String, dynamic>?> getProfile() async {
     final token = await TokenStorage.getToken();
 
     final response = await http.get(
-      Uri.parse('$baseUrl/users/me'),
+      Uri.parse('${ApiConfig.baseUrl}/users/me'),
       headers: {
         'Authorization': 'Bearer $token',
       },

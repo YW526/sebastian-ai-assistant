@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:sebastian_app/config/api_config.dart';
 
 class AuthService {
-  final String baseUrl = 'http://localhost:3000'; 
-
   Future<String?> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/auth/login'),
+      Uri.parse('${ApiConfig.baseUrl}/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': email,
@@ -21,6 +20,7 @@ class AuthService {
       return null;
     }
   }
+
   /// 성공 시 `null`, 실패 시 사용자에게 보여줄 메시지.
   Future<String?> signup({
     required String email,
@@ -30,7 +30,7 @@ class AuthService {
     required String gender,
   }) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/users/signup'),
+      Uri.parse('${ApiConfig.baseUrl}/users/signup'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': email,
@@ -53,10 +53,10 @@ class AuthService {
     } catch (_) {}
     return '회원가입에 실패했습니다 (${response.statusCode})';
   }
-  
+
   Future<String?> updatePassword(String email, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/users/password'),
+      Uri.parse('${ApiConfig.baseUrl}/users/password'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -71,19 +71,19 @@ class AuthService {
     }
 
     try {
-    final data = jsonDecode(response.body);
+      final data = jsonDecode(response.body);
 
-    final message = data['message'];
+      final message = data['message'];
 
-    if (message is List) {
-      return message.join('\n');
-    } else if (message is String) {
-      return message;
+      if (message is List) {
+        return message.join('\n');
+      } else if (message is String) {
+        return message;
+      }
+    } catch (e) {
+      print(e);
     }
-  } catch (e) {
-    print(e);
-  }
 
-  return '비밀번호 변경 실패 (${response.statusCode})';
+    return '비밀번호 변경 실패 (${response.statusCode})';
   }
 }

@@ -13,7 +13,7 @@ class MySebastianApp extends StatelessWidget {
         title: '나의 세바스찬',
         theme: AppTheme.lightTheme,
         // initialRoute: AppRoutes.splash,
-        initialRoute: AppRoutes.home,
+        initialRoute: AppRoutes.splash,
         localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

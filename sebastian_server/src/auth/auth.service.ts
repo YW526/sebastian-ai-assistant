@@ -17,6 +17,21 @@ export class AuthService {
       throw new UnauthorizedException('유저 없음');
     }
 
+    if (
+      password == null ||
+      typeof password !== 'string' ||
+      password.length === 0
+    ) {
+      throw new UnauthorizedException('비밀번호를 입력해 주세요');
+    }
+    if (
+      user.password == null ||
+      typeof user.password !== 'string' ||
+      user.password.length === 0
+    ) {
+      throw new UnauthorizedException('계정 정보가 올바르지 않습니다');
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {

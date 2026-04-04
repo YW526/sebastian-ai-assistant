@@ -3,7 +3,10 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Persona } from '../chat/persona.entity';
 
 @Entity('users')
 export class User {
@@ -27,6 +30,15 @@ export class User {
 
   @Column({ default: 'male' })
   gender: string;
+
+  //현재 사용중인 persona
+  @ManyToOne(() => Persona, { nullable: true })
+  @JoinColumn({ name: 'activePersonaId' })
+  activePersona: Persona | null;
+
+  //현재 사용중인 persona 닉네임
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  personaNickname: string | null;
 
   //가입일시 -> 자동생성
   @CreateDateColumn({ type: 'datetime' })
