@@ -20,7 +20,33 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      body: Padding(
+        padding: const EdgeInsets.only(top: 40),
+        child: Column(
+          children: [
+            const CustomTopBar(),
+            const SizedBox(height: 10),
+            const CustomTabBar(),
+            const SizedBox(height: 20),
+            const Divider(
+              height: 1,
+              thickness: 1,
+              color: Color(0xFFD9D9D9),
+            ),
+            TextButton(
+              onPressed: () => Get.toNamed('/calendar'),
+              child: const Text(
+                "+",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

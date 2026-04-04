@@ -13,7 +13,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
 
   final tabs = [
     {"icon": Icons.home, "label": "홈", "route": "/home"},
-    {"icon": Icons.calendar_today, "label": "일정", "route": "/calendar"},
+    {"icon": Icons.calendar_today, "label": "일정", "route": "/schedule"},
     {"icon": Icons.check_box, "label": "루틴", "route": "/routine"},
     {"icon": Icons.person, "label": "설정", "route": "/setting"},
   ];

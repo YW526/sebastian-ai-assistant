@@ -7,6 +7,7 @@ import '../screens/auth/signup_screen.dart';
 import '../screens/auth/password_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/home/notifications_screen.dart';
+import '../screens/home/schedule_screen.dart';
 import '../screens/home/calendar_screen.dart';
 import '../screens/home/routine_screen.dart';
 import '../screens/home/setting_screen.dart';
@@ -18,6 +19,7 @@ class AppRoutes {
   static const home = '/home';
   static const password = '/password';
   static const notifications = '/notifications';
+  static const schedule = '/schedule';
   static const calendar = '/calendar';
   static const routine = '/routine';
   static const setting = '/setting';
@@ -54,6 +56,11 @@ class AppRoutes {
     GetPage(
         name: notifications, 
         page: () => const NotificationsScreen(),
+        transition: Transition.fadeIn,
+    ),
+    GetPage(
+        name: schedule, 
+        page: () => const ScheduleScreen(),
         transition: Transition.fadeIn,
     ),
     GetPage(
