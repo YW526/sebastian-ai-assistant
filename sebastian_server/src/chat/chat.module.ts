@@ -6,12 +6,15 @@ import { User } from '../user/user.entity';
 import { ChatService } from './chat.service';
 import { ChatController } from './chat.controller';
 import { PersonaSeedService } from './persona-seed.service';
-import { OllamaService } from './ollama.service';
+import { AiModule } from '../ai/ai.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ChatMessages, Persona, User])],
+  imports: [
+    TypeOrmModule.forFeature([ChatMessages, Persona, User]),
+    AiModule,
+  ],
   controllers: [ChatController],
-  providers: [ChatService, PersonaSeedService, OllamaService],
+  providers: [ChatService, PersonaSeedService],
   exports: [ChatService],
 })
 export class ChatModule {}

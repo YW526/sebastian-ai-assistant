@@ -15,7 +15,7 @@ import { ChatMessageResponseDto } from './dto/chat-message-response.dto';
 import { PersonaListItemDto } from './dto/persona-list-item.dto';
 import { PersonaProfileResponseDto } from './dto/persona-profile-response.dto';
 import { SendChatMessageResponseDto } from './dto/send-chat-message-response.dto';
-import { OllamaService, OllamaChatMessage } from './ollama.service';
+import { AiProviderService, AiChatMessage } from '../ai/ai-provider.service';
 
 /** DB `persona.type` — 활성 페르소나가 없을 때 시스템 프롬프트 소스 */
 const DEFAULT_PERSONA_TYPE = 'basic';
@@ -32,7 +32,7 @@ export class ChatService {
     private readonly personaRepo: Repository<Persona>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    private readonly ollama: OllamaService,
+    private readonly aiProvider: AiProviderService,
     private readonly config: ConfigService,
   ) {}
 
@@ -98,7 +98,7 @@ export class ChatService {
     const systemPrompt = await this.resolveSystemPrompt(userWithPersona);
 
     const maxHistory = Number(
-      this.config.get<string>('OLLAMA_MAX_HISTORY_MESSAGES') ?? '40',
+      this.config.get<string>('AI_MAX_HISTORY_MESSAGES') ?? '40',
     );
     const historyCap = Number.isFinite(maxHistory) && maxHistory > 0
       ? maxHistory
@@ -114,7 +114,7 @@ export class ChatService {
       )
       .slice(-historyCap);
 
-    const ollamaMessages: OllamaChatMessage[] = [
+    const aiMessages: AiChatMessage[] = [
       { role: 'system', content: systemPrompt },
       ...contextRows.map((r) => ({
         role: r.senderRole as 'user' | 'assistant',
@@ -124,10 +124,11 @@ export class ChatService {
 
     let assistantText: string;
     try {
-      assistantText = await this.ollama.chat(ollamaMessages);
+      const result = await this.aiProvider.chat(aiMessages, userId);
+      assistantText = result.text;
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
-      assistantText = `[Ollama 오류] ${msg}`;
+      assistantText = `[AI 오류] ${msg}`;
     }
 
     const assistantRow = this.chatMessagesRepo.create({

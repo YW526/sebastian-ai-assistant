@@ -22,6 +22,7 @@ async function bootstrap() {
     .addTag('Auth')
     .addTag('Users')
     .addTag('Chat')
+    .addTag('AI')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
